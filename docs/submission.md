@@ -18,7 +18,7 @@ You                              Valoon
 ```
 
 1. **Prepare** your manifest ([manifest.md](manifest.md)) and validate it against the schema.
-2. **Submit** it on the marketplace partner page (`/partners`): fill in your name, contact email and paste the manifest JSON. The marketplace validates the structure on the spot and stores the submission as **pending** — this is the only thing a partner can do; nothing becomes public yet.
+2. **Submit** it on the marketplace partner page (`/partners`): paste the manifest JSON — that's the whole form. Who you are comes from the manifest itself, so `contact.email` (optional elsewhere) is **required** here; it's where review feedback goes. The marketplace validates the structure on the spot and stores the submission as **pending** — this is the only thing a partner can do; nothing becomes public yet.
 3. **Review.** Valoon checks the manifest content, that the `redirect_url` is yours and serves HTTPS, and runs a live handoff against your endpoint. Expect questions at the `contact.email` you provided.
 4. **Approval** registers the manifest in the catalog: your listing goes live at `/listing/<slug>` with the connect flow active. Rejections come with reasons; fix and resubmit.
 
