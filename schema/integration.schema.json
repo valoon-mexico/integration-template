@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/valoon-mexico/integration-template/main/schema/integration.schema.json",
+  "title": "Valoon Marketplace listing manifest",
+  "description": "Single JSON document that fully describes an app or integration for the Valoon Marketplace. Partners submit this file; once approved it becomes the catalog entry and drives the connect flow.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_version", "slug", "type", "i18n", "connection"],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "description": "Optional pointer to this schema, for editor validation."
+    },
+    "manifest_version": {
+      "const": 1,
+      "description": "Version of the manifest format. Currently always 1."
+    },
+    "slug": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]{1,46}[a-z0-9]$",
+      "description": "Unique kebab-case identifier. It is the marketplace URL segment (/listing/<slug>) and the key used to upsert the catalog entry."
+    },
+    "type": {
+      "enum": ["app", "integration"],
+      "description": "app = runs on the user's infrastructure (download/installer/MCP). integration = runs as an external service that connects to the user's Valoon account."
+    },
+    "category": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "description": "Kebab-case category slug used by catalog filters (e.g. communication, sync, time-tracking, ai, export)."
+    },
+    "availability": {
+      "enum": ["available", "coming_soon"],
+      "default": "available",
+      "description": "coming_soon lists the entry in the catalog without an active install/connect flow."
+    },
+    "made_by": {
+      "enum": ["valoon", "partner"],
+      "default": "partner",
+      "description": "Who builds and operates it. Partner submissions are always registered as partner regardless of this value."
+    },
+    "certified": {
+      "type": "boolean",
+      "default": false,
+      "description": "Valoon certification badge. Set by Valoon during review — values in partner submissions are ignored."
+    },
+    "icon": {
+      "type": "string",
+      "format": "uri",
+      "description": "HTTPS URL of a square icon (SVG or PNG, ≥128px). When omitted the marketplace renders an initials placeholder."
+    },
+    "works_with": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" },
+      "uniqueItems": true,
+      "description": "Valoon entities the listing reads or writes: projects, tickets, reports, users, time-entries, media, files, labels, …"
+    },
+    "platforms": {
+      "type": "array",
+      "items": { "type": "string" },
+      "uniqueItems": true,
+      "description": "Apps only: platforms it runs on (e.g. Windows, macOS, Linux, Web)."
+    },
+    "external_service": {
+      "type": "string",
+      "description": "Integrations only: the external service it bridges to Valoon (e.g. WhatsApp, Google Drive, SAP)."
+    },
+    "stack": {
+      "type": "string",
+      "description": "Short human-readable tech stack line shown on the detail page (e.g. \"Node.js · Express · PostgreSQL\")."
+    },
+    "links": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "External links rendered on the detail page. All optional.",
+      "properties": {
+        "repo": { "type": "string", "format": "uri" },
+        "docs": { "type": "string", "format": "uri" },
+        "download": { "type": "string", "format": "uri" },
+        "releases": { "type": "string", "format": "uri" },
+        "mcp": {
+          "type": "string",
+          "format": "uri",
+          "description": "Remote MCP server endpoint. When present the install flow renders client config snippets for it."
+        }
+      }
+    },
+    "i18n": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["en"],
+      "description": "Catalog copy per locale. English is required; de/es/fr are strongly recommended (the marketplace falls back to en, then de).",
+      "properties": {
+        "en": { "$ref": "#/$defs/localeContent" },
+        "de": { "$ref": "#/$defs/localeContent" },
+        "es": { "$ref": "#/$defs/localeContent" },
+        "fr": { "$ref": "#/$defs/localeContent" }
+      }
+    },
+    "connection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method"],
+      "description": "How the marketplace hands a user over to the listing.",
+      "properties": {
+        "method": {
+          "enum": ["handoff", "api_key", "none"],
+          "description": "handoff = full marketplace→integration token handoff (see docs/protocol.md). api_key = the marketplace only walks the user through creating/pasting a Valoon API key (apps that hold the key themselves, e.g. MCP clients). none = nothing to connect (plain downloads)."
+        },
+        "redirect_url": {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https?://",
+          "description": "handoff only: HTTPS endpoint of YOUR backend that receives the user after the marketplace flow. The marketplace appends ?handoff_token=vmh_… — your backend claims it server-side. Must be HTTPS in production."
+        },
+        "config_fields": {
+          "type": "array",
+          "maxItems": 12,
+          "items": { "$ref": "#/$defs/configField" },
+          "description": "Setup inputs the marketplace collects in its connect flow and delivers inside the handoff payload (config object). Keep it to what you need before first contact — everything else belongs in your own UI after the handoff."
+        }
+      },
+      "if": {
+        "properties": { "method": { "const": "handoff" } }
+      },
+      "then": {
+        "required": ["method", "redirect_url"]
+      }
+    },
+    "contact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["email"],
+      "description": "Who Valoon contacts about this listing. Not shown publicly.",
+      "properties": {
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" }
+      }
+    },
+    "sort_order": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Catalog ordering hint (lower = earlier). Valoon may adjust it."
+    }
+  },
+  "$defs": {
+    "localeContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "tagline", "description"],
+      "properties": {
+        "name": { "type": "string", "minLength": 2, "maxLength": 60 },
+        "tagline": {
+          "type": "string",
+          "minLength": 8,
+          "maxLength": 120,
+          "description": "One sentence shown on catalog cards."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 40,
+          "maxLength": 1200,
+          "description": "Detail-page paragraph. Plain text, no markdown."
+        },
+        "highlights": {
+          "type": "array",
+          "maxItems": 6,
+          "items": { "type": "string", "maxLength": 140 },
+          "description": "Bullet list of what it does best."
+        },
+        "prerequisites": {
+          "type": "array",
+          "maxItems": 6,
+          "items": { "type": "string", "maxLength": 140 },
+          "description": "What the user needs before connecting."
+        }
+      }
+    },
+    "configField": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "type", "i18n"],
+      "properties": {
+        "key": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9_]{0,38}[a-z0-9]$",
+          "description": "Snake_case key under which the value arrives in the handoff payload's config object."
+        },
+        "type": {
+          "enum": ["text", "textarea", "select", "password"],
+          "description": "Input widget. password values are masked in the UI and never logged."
+        },
+        "required": { "type": "boolean", "default": false },
+        "options": {
+          "type": "array",
+          "minItems": 2,
+          "items": { "type": "string" },
+          "description": "select only: the selectable values (sent verbatim in the payload)."
+        },
+        "i18n": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["en"],
+          "properties": {
+            "en": { "$ref": "#/$defs/fieldCopy" },
+            "de": { "$ref": "#/$defs/fieldCopy" },
+            "es": { "$ref": "#/$defs/fieldCopy" },
+            "fr": { "$ref": "#/$defs/fieldCopy" }
+          }
+        }
+      },
+      "if": {
+        "properties": { "type": { "const": "select" } }
+      },
+      "then": {
+        "required": ["key", "type", "i18n", "options"]
+      }
+    },
+    "fieldCopy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["label"],
+      "properties": {
+        "label": { "type": "string", "maxLength": 60 },
+        "placeholder": { "type": "string", "maxLength": 80 },
+        "help": { "type": "string", "maxLength": 200 }
+      }
+    }
+  }
+}

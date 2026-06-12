@@ -1,0 +1,11 @@
+{
+  "name": "valoon-integration-template",
+  "version": "1.0.0",
+  "description": "Reference implementation and documentation for building Valoon Marketplace integrations",
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "license": "MIT"
+}

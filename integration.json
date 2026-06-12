@@ -1,0 +1,80 @@
+{
+  "$schema": "https://raw.githubusercontent.com/valoon-mexico/integration-template/main/schema/integration.schema.json",
+  "manifest_version": 1,
+  "slug": "integration-template",
+  "type": "integration",
+  "category": "automation",
+  "availability": "coming_soon",
+  "made_by": "partner",
+  "works_with": ["projects"],
+  "external_service": "Your service",
+  "stack": "Node.js",
+  "links": {
+    "repo": "https://github.com/valoon-mexico/integration-template",
+    "docs": "https://github.com/valoon-mexico/integration-template/tree/main/docs"
+  },
+  "i18n": {
+    "en": {
+      "name": "Integration Template",
+      "tagline": "The reference implementation every Valoon integration starts from.",
+      "description": "A minimal, dependency-free reference integration that implements the marketplace handoff protocol end to end: it receives the redirect, claims the one-time token server-side, verifies the Valoon API key against the gateway and stores the connection behind a simple register/login. Fork it, replace the demo logic with yours, submit your manifest.",
+      "highlights": [
+        "Complete handoff protocol implementation in ~250 lines",
+        "No dependencies — plain Node.js standard library",
+        "Register/login landing so users can return and manage the connection"
+      ],
+      "prerequisites": ["Node.js 20 or newer", "A Valoon API key for testing"]
+    },
+    "de": {
+      "name": "Integration Template",
+      "tagline": "Die Referenzimplementierung, mit der jede Valoon-Integration beginnt.",
+      "description": "Eine minimale Referenz-Integration ohne Abhängigkeiten, die das Handoff-Protokoll des Marketplace vollständig umsetzt: Sie empfängt den Redirect, löst das Einmal-Token serverseitig ein, prüft den Valoon-API-Key gegen das Gateway und speichert die Verbindung hinter einem einfachen Registrieren/Anmelden. Forken, Demo-Logik ersetzen, Manifest einreichen.",
+      "highlights": [
+        "Vollständiges Handoff-Protokoll in ca. 250 Zeilen",
+        "Keine Abhängigkeiten — nur die Node.js-Standardbibliothek",
+        "Registrieren/Anmelden, damit Nutzer die Verbindung später verwalten können"
+      ],
+      "prerequisites": ["Node.js 20 oder neuer", "Ein Valoon-API-Key zum Testen"]
+    },
+    "es": {
+      "name": "Integration Template",
+      "tagline": "La implementación de referencia con la que empieza toda integración de Valoon.",
+      "description": "Una integración de referencia mínima y sin dependencias que implementa el protocolo de handoff del marketplace de punta a punta: recibe el redirect, reclama el token de un solo uso desde el servidor, verifica la API key de Valoon contra el gateway y guarda la conexión tras un registro/login sencillo. Haz fork, sustituye la lógica demo por la tuya y envía tu manifest.",
+      "highlights": [
+        "Protocolo de handoff completo en ~250 líneas",
+        "Sin dependencias — solo la librería estándar de Node.js",
+        "Registro/login para que el usuario vuelva y gestione su conexión"
+      ],
+      "prerequisites": ["Node.js 20 o superior", "Una API key de Valoon para pruebas"]
+    },
+    "fr": {
+      "name": "Integration Template",
+      "tagline": "L'implémentation de référence par laquelle commence chaque intégration Valoon.",
+      "description": "Une intégration de référence minimale et sans dépendances qui implémente le protocole de handoff du marketplace de bout en bout : elle reçoit la redirection, réclame le jeton à usage unique côté serveur, vérifie la clé API Valoon auprès de la passerelle et enregistre la connexion derrière une inscription/connexion simple. Forkez, remplacez la logique de démonstration par la vôtre, soumettez votre manifest.",
+      "highlights": [
+        "Protocole de handoff complet en ~250 lignes",
+        "Aucune dépendance — uniquement la bibliothèque standard Node.js",
+        "Inscription/connexion pour que l'utilisateur gère sa connexion plus tard"
+      ],
+      "prerequisites": ["Node.js 20 ou plus récent", "Une clé API Valoon pour les tests"]
+    }
+  },
+  "connection": {
+    "method": "handoff",
+    "redirect_url": "http://localhost:4810/valoon/connect",
+    "config_fields": [
+      {
+        "key": "example_note",
+        "type": "text",
+        "required": false,
+        "i18n": {
+          "en": { "label": "Example note", "placeholder": "Anything — it arrives in the handoff payload", "help": "Demonstrates how config_fields travel from the marketplace to your backend." },
+          "de": { "label": "Beispielnotiz", "placeholder": "Beliebig — kommt im Handoff-Payload an" },
+          "es": { "label": "Nota de ejemplo", "placeholder": "Lo que sea — llega en el payload del handoff" },
+          "fr": { "label": "Note d'exemple", "placeholder": "N'importe quoi — arrive dans le payload du handoff" }
+        }
+      }
+    ]
+  },
+  "contact": { "name": "Valoon", "email": "partners@valoon.chat" }
+}
